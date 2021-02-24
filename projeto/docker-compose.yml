@@ -1,0 +1,27 @@
+version: "3.7"
+
+services:
+  nginx.proxy.localhost:
+    image: "jwilder/nginx-proxy"
+    container_name: "eli-proxy"
+    ports:
+      - "80:80"
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+
+  projeto.localhost:
+    image: "eli/projeto"
+    build:
+      context: '.'
+      dockerfile: 'Dockerfile'
+    container_name: "projeto"
+    ports:
+      - "80"
+    volumes:
+      - "${PWD}/src:/home/www/projeto:delegated"
+    environment:
+      - "VIRTUAL_HOST=projeto.localhost"
+    depends_on:
+      - nginx.proxy.localhost
+
+
